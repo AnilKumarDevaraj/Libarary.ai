@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KJC Library.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f3ee;--bg2:#ede9e1;--bg3:#e4dfd5;
+  --surface:#ffffff;--surface2:#faf8f5;
+  --ink:#1a1814;--ink2:#4a453d;--ink3:#8a8278;
+  --accent:#c8602a;--accent2:#2a6bc8;--accent3:#2ab87a;--accent4:#c8a02a;
+  --border:#d4cfc6;--border2:#e8e4de;
+  --red:#e84040;--yellow:#e8a020;--green:#20a060;
+  --radius:12px;--radius-sm:8px;--radius-lg:18px;
+}
+html{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* LOGIN */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--bg)}
+.login-logo{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:600;color:var(--ink);margin-bottom:0.3rem;letter-spacing:-0.02em}
+.login-logo span{color:var(--accent)}
+.login-tagline{font-size:0.85rem;color:var(--ink3);margin-bottom:2.5rem}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.login-card h2{font-size:1.1rem;font-weight:600;margin-bottom:1.5rem;color:var(--ink)}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.role-btn{background:var(--bg2);border:2px solid transparent;border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.role-btn:hover{border-color:var(--accent);background:var(--surface)}
+.role-btn.selected{border-color:var(--accent);background:#fff5f0}
+.role-btn .role-icon{font-size:1.6rem;margin-bottom:6px}
+.role-btn .role-label{font-size:0.8rem;font-weight:600;color:var(--ink2)}
+.role-btn .role-sub{font-size:0.7rem;color:var(--ink3);margin-top:2px}
+.form-group{margin-bottom:1rem}
+.form-group label{font-size:0.78rem;font-weight:600;color:var(--ink2);display:block;margin-bottom:6px}
+.form-group input,select.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;transition:border-color 0.2s}
+.form-group input:focus,select.form-input:focus{border-color:var(--accent);background:var(--surface)}
+select.form-input{appearance:none;cursor:pointer}
+.login-btn{width:100%;background:var(--accent);color:white;border:none;border-radius:var(--radius);padding:13px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;transition:opacity 0.2s}
+.login-btn:hover{opacity:0.9}
+.demo-hint{font-size:0.75rem;color:var(--ink3);text-align:center;margin-top:1rem}
+
+/* APP SHELL */
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border2);padding:0 1.2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;color:var(--ink)}
+.topbar-logo span{color:var(--accent)}
+.topbar-user{display:flex;align-items:center;gap:10px}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:white;flex-shrink:0}
+.user-info{text-align:right}
+.user-name{font-size:0.8rem;font-weight:600;color:var(--ink)}
+.user-role{font-size:0.68rem;color:var(--ink3)}
+.logout-btn{background:var(--bg2);border:1px solid var(--border);color:var(--ink2);padding:6px 12px;border-radius:20px;font-size:0.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+.main-content{flex:1;padding:1.2rem;max-width:1200px;margin:0 auto;width:100%}
+
+/* BOTTOM NAV */
+.bottom-nav{background:var(--surface);border-top:1px solid var(--border2);display:flex;position:sticky;bottom:0;z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:color 0.2s;color:var(--ink3)}
+.nav-item.active{color:var(--accent)}
+.nav-item svg{width:20px;height:20px;margin-bottom:3px}
+.nav-item span{font-size:0.65rem;font-weight:500}
+
+/* TABS & PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* SECTION TITLES */
+.page-header{margin-bottom:1.2rem}
+.page-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--ink);letter-spacing:-0.01em}
+.page-sub{font-size:0.82rem;color:var(--ink3);margin-top:3px}
+.section-label{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink3);margin-bottom:0.8rem}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.2rem}
+.card-sm{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem}
+
+/* LIBRARY STATUS CARDS */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:1.5rem}
+.lib-status-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.lib-status-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.lib-status-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.lib-full::before{background:var(--red)}
+.lib-moderate::before{background:var(--yellow)}
+.lib-open::before{background:var(--green)}
+.lib-closed::before{background:var(--ink3)}
+.lib-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.lib-card-name{font-size:0.95rem;font-weight:600;color:var(--ink)}
+.lib-card-dept{font-size:0.72rem;color:var(--ink3);margin-top:2px}
+.status-pill{padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;flex-shrink:0}
+.pill-full{background:#fdeaea;color:var(--red)}
+.pill-moderate{background:#fef5e7;color:var(--yellow)}
+.pill-open{background:#e7faf2;color:var(--green)}
+.pill-closed{background:var(--bg3);color:var(--ink3)}
+.occ-bar{height:7px;background:var(--bg3);border-radius:4px;margin:8px 0}
+.occ-fill{height:100%;border-radius:4px;transition:width 0.6s}
+.fill-full{background:var(--red)}
+.fill-moderate{background:var(--yellow)}
+.fill-open{background:var(--green)}
+.occ-nums{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--ink3)}
+.occ-count{font-size:1.4rem;font-weight:700;color:var(--ink);margin:4px 0 0}
+.redirect-btn{margin-top:12px;width:100%;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:8px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s}
+.redirect-btn:hover{opacity:0.85}
+.redirect-btn:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed}
+
+/* STAFF SCHEDULE */
+.schedule-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.2rem;margin-bottom:12px}
+.schedule-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.schedule-card-title{font-size:0.9rem;font-weight:600;color:var(--ink)}
+.shift-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.shift-row:last-child{border-bottom:none}
+.shift-ava{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;flex-shrink:0}
+.shift-name{flex:1;font-size:0.84rem;font-weight:500}
+.shift-time{font-size:0.75rem;color:var(--ink3)}
+.on-duty{background:#e7faf2;color:var(--green);padding:3px 8px;border-radius:6px;font-size:0.68rem;font-weight:700}
+.off-duty{background:var(--bg3);color:var(--ink3);padding:3px 8px;border-radius:6px;font-size:0.68rem}
+
+/* HOLIDAY CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.cal-day-label{text-align:center;font-size:0.65rem;font-weight:600;color:var(--ink3);padding:4px 0}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:0.75rem;font-weight:500;cursor:default}
+.cal-empty{background:transparent}
+.cal-work{background:var(--bg2);color:var(--ink2)}
+.cal-holiday{background:#fdeaea;color:var(--red)}
+.cal-today{background:var(--accent);color:white;font-weight:700}
+.cal-weekend{background:var(--bg3);color:var(--ink3)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.stat-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem;text-align:center}
+.stat-val{font-size:1.6rem;font-weight:700;color:var(--ink)}
+.stat-lbl{font-size:0.72rem;color:var(--ink3);margin-top:2px}
+.stat-delta{font-size:0.7rem;margin-top:4px;font-weight:600}
+.delta-up{color:var(--green)}
+.delta-down{color:var(--red)}
+
+/* AI CHAT */
+#chat-page{display:none;flex-direction:column;height:calc(100vh - 56px - 56px)}
+#chat-page.active{display:flex}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:12px}
+.chat-bubble{max-width:88%;padding:10px 14px;border-radius:14px;font-size:0.84rem;line-height:1.55}
+.bubble-ai{background:var(--surface);border:1px solid var(--border2);border-radius:14px 14px 14px 4px;align-self:flex-start}
+.bubble-user{background:var(--accent);color:white;border-radius:14px 14px 4px 14px;align-self:flex-end}
+.bubble-ai.typing{opacity:0.6}
+.chat-input-bar{background:var(--surface);border-top:1px solid var(--border2);padding:10px 12px;display:flex;gap:8px;align-items:flex-end}
+.chat-input-bar textarea{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:9px 14px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;resize:none;max-height:100px;line-height:1.4;transition:border-color 0.2s}
+.chat-input-bar textarea:focus{border-color:var(--accent);background:var(--surface)}
+.send-btn{width:38px;height:38px;background:var(--accent);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:opacity 0.2s}
+.send-btn:hover{opacity:0.85}
+.send-btn:disabled{background:var(--bg3);cursor:not-allowed}
+.quick-chips{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px 0;overflow-x:auto}
+.chip{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:0.75rem;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--ink2);font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.chip:hover{background:var(--surface);border-color:var(--accent);color:var(--accent)}
+.book-card-inline{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:8px}
+.book-card-inline .bk-title{font-weight:600;font-size:0.82rem;margin-bottom:4px}
+.book-card-inline .bk-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:0.74rem;color:var(--ink3)}
+.avail-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px}
+.dot-green{background:var(--green)}
+.dot-yellow{background:var(--yellow)}
+.dot-red{background:var(--red)}
+
+/* ATTENDANCE */
+.att-filters{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;font-size:0.8rem;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;cursor:pointer}
+.att-table-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden}
+.att-table-header{padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.att-table-title{font-size:0.85rem;font-weight:600}
+.att-progress{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--ink3)}
+.att-prog-bar{width:80px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.att-prog-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.4s}
+.att-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border2)}
+.att-row:last-child{border-bottom:none}
+.att-ava{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+.att-info{flex:1}
+.att-name{font-size:0.85rem;font-weight:500}
+.att-roll{font-size:0.7rem;color:var(--ink3)}
+.att-dept{font-size:0.7rem;color:var(--accent2)}
+.check-box{width:26px;height:26px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.check-box.present{background:var(--green);border-color:var(--green)}
+.check-box.absent{background:#fdeaea;border-color:var(--red)}
+.att-footer{padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border2);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.submit-att-btn{background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:9px 20px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity 0.2s}
+.submit-att-btn:hover{opacity:0.85}
+.att-summary{font-size:0.8rem;color:var(--ink2);flex:1}
+.mark-all-btn{background:var(--bg);border:1px solid var(--border);color:var(--ink2);border-radius:var(--radius-sm);padding:8px 14px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.export-btn{background:var(--accent2);color:white;border:none;border-radius:var(--radius-sm);padding:9px 16px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* NOTIFICATIONS */
+.notif-item{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;border-left:3px solid transparent}
+.notif-item.notif-danger{border-left-color:var(--red)}
+.notif-item.notif-warn{border-left-color:var(--yellow)}
+.notif-item.notif-info{border-left-color:var(--accent2)}
+.notif-item.notif-success{border-left-color:var(--green)}
+.notif-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.ni-red{background:#fdeaea}
+.ni-yellow{background:#fef5e7}
+.ni-blue{background:#e8f0fe}
+.ni-green{background:#e7faf2}
+.notif-body{flex:1}
+.notif-title{font-size:0.84rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.notif-text{font-size:0.78rem;color:var(--ink2);line-height:1.45}
+.notif-time{font-size:0.7rem;color:var(--ink3);margin-top:4px}
+.notif-unread{width:8px;height:8px;background:var(--accent);border-radius:50%;flex-shrink:0;margin-top:4px}
+
+/* MY BOOKS (Student) */
+.my-book-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.book-spine{width:44px;height:60px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.book-details{flex:1}
+.book-title{font-size:0.9rem;font-weight:600;margin-bottom:3px}
+.book-author{font-size:0.75rem;color:var(--ink3);margin-bottom:6px}
+.book-due{font-size:0.75rem;font-weight:600}
+.due-safe{color:var(--green)}
+.due-warn{color:var(--yellow)}
+.due-overdue{color:var(--red)}
+.renew-btn{background:var(--bg2);border:1px solid var(--border);color:var(--ink2);border-radius:var(--radius-sm);padding:6px 12px;font-size:0.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* REDIRECT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border-radius:var(--radius-lg);padding:1.5rem;max-width:400px;width:100%}
+.modal-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;margin-bottom:0.5rem}
+.modal-sub{font-size:0.82rem;color:var(--ink3);margin-bottom:1.2rem}
+.modal-option{background:var(--bg2);border:2px solid transparent;border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:10px}
+.modal-option:hover{border-color:var(--accent);background:var(--surface)}
+.modal-option.selected{border-color:var(--accent);background:#fff5f0}
+.modal-option-name{font-size:0.88rem;font-weight:600}
+.modal-option-cap{font-size:0.75rem;color:var(--ink3);margin-top:1px}
+.modal-btns{display:flex;gap:8px;margin-top:1rem}
+.modal-cancel{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--ink2);border-radius:var(--radius-sm);padding:10px;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.modal-confirm{flex:1;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);padding:10px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:white;padding:10px 20px;border-radius:30px;font-size:0.82rem;font-weight:500;z-index:300;opacity:0;transition:all 0.3s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .lib-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:380px){
+  .lib-grid{grid-template-columns:1fr}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* SEARCH BAR */
+.search-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:1rem}
+.search-bar input{flex:1;background:none;border:none;outline:none;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--ink)}
+.search-bar svg{color:var(--ink3);flex-shrink:0}
+
+/* TABS */
+.tab-row{display:flex;gap:2px;background:var(--bg2);border-radius:var(--radius-sm);padding:3px;margin-bottom:1.2rem}
+.tab-item{flex:1;text-align:center;padding:7px;border-radius:6px;font-size:0.78rem;font-weight:500;cursor:pointer;color:var(--ink3);transition:all 0.2s;border:none;background:none;font-family:'DM Sans',sans-serif}
+.tab-item.active{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+
+/* TYPING DOTS */
+.typing-dots{display:flex;gap:4px;padding:4px 0}
+.typing-dots span{width:7px;height:7px;background:var(--ink3);border-radius:50%;animation:bounce 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:0.2s}
+.typing-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--ink3)}
+.empty-state svg{width:48px;height:48px;margin-bottom:1rem;opacity:0.3}
+.empty-state p{font-size:0.85rem}
+
+/* ANNOUNCE BANNER */
+.announce{background:linear-gradient(90deg,#fff5f0,#fff);border:1px solid #f5d5c0;border-radius:var(--radius);padding:10px 14px;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;font-size:0.8rem;color:var(--accent)}
+.announce strong{font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-logo">KJC Library<span>.ai</span></div>
+  <div class="login-tagline">Krupanidhi Junior College — Smart Library Platform</div>
+  <div class="login-card">
+    <h2>Choose your role to continue</h2>
+    <div class="role-grid">
+      <div class="role-btn" onclick="selectRole('student',this)">
+        <div class="role-icon">🎓</div>
+        <div class="role-label">Student</div>
+        <div class="role-sub">Browse & borrow</div>
+      </div>
+      <div class="role-btn" onclick="selectRole('teacher',this)">
+        <div class="role-icon">👨‍🏫</div>
+        <div class="role-label">Teacher</div>
+        <div class="role-sub">View & redirect</div>
+      </div>
+      <div class="role-btn" onclick="selectRole('librarian',this)">
+        <div class="role-icon">📚</div>
+        <div class="role-label">Librarian</div>
+        <div class="role-sub">Manage library</div>
+      </div>
+      <div class="role-btn" onclick="selectRole('admin',this)">
+        <div class="role-icon">🏫</div>
+        <div class="role-label">Admin</div>
+        <div class="role-sub">Full access</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="login-name" placeholder="Enter your name" />
+    </div>
+    <div class="form-group" id="dept-group" style="display:none">
+      <label>Department / Class</label>
+      <select class="form-input" id="login-dept">
+        <option value="PCB">PCB — Biology Stream</option>
+        <option value="PCM">PCM — Math Stream</option>
+        <option value="Commerce">Commerce</option>
+        <option value="Arts">Arts & Humanities</option>
+      </select>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Enter App →</button>
+    <div class="demo-hint">Demo app — no password required</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">KJC Library<span>.ai</span></div>
+    <div class="topbar-user">
+      <div>
+        <div class="user-name" id="topbar-name">—</div>
+        <div class="user-role" id="topbar-role">—</div>
+      </div>
+      <div class="user-avatar" id="topbar-avatar">?</div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main-content" id="main-content">
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title" id="dash-greeting">Good morning</div>
+        <div class="page-sub">Live library status across KJC</div>
+      </div>
+
+      <div class="announce" id="announce-banner" style="display:none">
+        <span>🔴</span>
+        <span><strong id="announce-text"></strong></span>
+      </div>
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="section-label">Library Occupancy — Live</div>
+      <div class="lib-grid" id="lib-grid"></div>
+
+      <div class="tab-row">
+        <button class="tab-item active" onclick="switchDashTab('schedule',this)">Staff Schedule</button>
+        <button class="tab-item" onclick="switchDashTab('calendar',this)">Holiday Calendar</button>
+        <button class="tab-item" onclick="switchDashTab('activity',this)">Recent Activity</button>
+      </div>
+
+      <div id="dash-tab-schedule"></div>
+      <div id="dash-tab-calendar" style="display:none"></div>
+      <div id="dash-tab-activity" style="display:none"></div>
+    </div>
+
+    <!-- AI CHAT PAGE -->
+    <div class="page" id="page-chat" style="display:none;flex-direction:column;height:calc(100vh - 56px - 56px - 2.4rem)">
+    </div>
+
+    <!-- ATTENDANCE PAGE -->
+    <div class="page" id="page-attendance">
+      <div class="page-header">
+        <div class="page-title">Attendance</div>
+        <div class="page-sub" id="att-sub">Mark and manage session attendance</div>
+      </div>
+      <div id="att-content"></div>
+    </div>
+
+    <!-- MY STUFF / NOTIFICATIONS PAGE -->
+    <div class="page" id="page-more">
+      <div class="page-header">
+        <div class="page-title" id="more-title">My Library</div>
+      </div>
+      <div id="more-content"></div>
+    </div>
+  </div>
+
+  <!-- CHAT PAGE (full height, outside main-content) -->
+  <div id="chat-container" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:0.8rem 1.2rem;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:white">L</div>
+      <div>
+        <div style="font-size:0.85rem;font-weight:600">LibraryAI Assistant</div>
+        <div style="font-size:0.7rem;color:var(--green)">● Powered by Claude AI</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="quick-chips" id="quick-chips"></div>
+    <div class="chat-input-bar">
+      <textarea id="chat-input" rows="1" placeholder="Ask about books, racks, availability…" onkeydown="handleChatKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendChat()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="bottom-nav" id="bottom-nav"></div>
+</div>
+
+<div class="modal-overlay" id="redirect-modal">
+  <div class="modal-box">
+    <div class="modal-title">Redirect Students</div>
+    <div class="modal-sub" id="modal-sub">Select destination library for students from <strong id="modal-from"></strong></div>
+    <div id="modal-options"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-confirm" onclick="confirmRedirect()">Send Redirect →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const LIBRARIES = [
+  {id:'central', name:'Central Library', dept:'General / All Departments', capacity:200, occupied:176, staff:[
+    {name:'Ramesh S.', initials:'RS', shift:'8:00 AM – 2:00 PM', on:true, color:'#c8602a'},
+    {name:'Priya K.', initials:'PK', shift:'2:00 PM – 7:00 PM', on:false, color:'#2ab87a'},
+    {name:'Meena R.', initials:'MR', shift:'Off Today', on:false, color:'#c8a02a'},
+  ]},
+  {id:'science', name:'Science Block Library', dept:'PCM / PCB Department', capacity:150, occupied:81, staff:[
+    {name:'Arjun J.', initials:'AJ', shift:'8:00 AM – 3:00 PM', on:true, color:'#2a6bc8'},
+    {name:'Sunita N.', initials:'SN', shift:'3:00 PM – 7:00 PM', on:false, color:'#c8a02a'},
+    {name:'Vijay T.', initials:'VT', shift:'8:00 AM – 1:00 PM', on:true, color:'#2ab87a'},
+  ]},
+  {id:'commerce', name:'Commerce Library', dept:'Commerce Department', capacity:120, occupied:36, staff:[
+    {name:'Kavitha M.', initials:'KM', shift:'8:00 AM – 7:00 PM', on:true, color:'#c8602a'},
+    {name:'Suresh P.', initials:'SP', shift:'Off Today', on:false, color:'#2a6bc8'},
+  ]},
+  {id:'arts', name:'Arts & Humanities', dept:'Arts Department', capacity:90, occupied:18, staff:[
+    {name:'Divya L.', initials:'DL', shift:'8:00 AM – 5:00 PM', on:true, color:'#9b59b6'},
+    {name:'Rajan K.', initials:'RK', shift:'5:00 PM – 7:00 PM', on:false, color:'#2ab87a'},
+  ]},
+];
+
+const STUDENTS = [
+  {name:'Aditya Kumar',   roll:'21CB04', dept:'Commerce', initials:'AK', color:'#c8602a'},
+  {name:'Sneha Joshi',    roll:'21CB07', dept:'Commerce', initials:'SJ', color:'#c8a02a'},
+  {name:'Rahul Nair',     roll:'21CB12', dept:'Commerce', initials:'RN', color:'#2ab87a'},
+  {name:'Pooja Menon',    roll:'21CB15', dept:'Commerce', initials:'PM', color:'#2a6bc8'},
+  {name:'Kiran Sharma',   roll:'21CB18', dept:'Commerce', initials:'KS', color:'#9b59b6'},
+  {name:'Divya Verma',    roll:'21CB23', dept:'Commerce', initials:'DV', color:'#c8602a'},
+  {name:'Aryan Mishra',   roll:'21CB27', dept:'Commerce', initials:'AM', color:'#c8a02a'},
+  {name:'Nisha Rao',      roll:'21CB31', dept:'Commerce', initials:'NR', color:'#2ab87a'},
+  {name:'Tarun Bhat',     roll:'21PB05', dept:'PCB', initials:'TB', color:'#2a6bc8'},
+  {name:'Meghna Iyer',    roll:'21PB09', dept:'PCB', initials:'MI', color:'#9b59b6'},
+  {name:'Rohan Das',      roll:'21PM03', dept:'PCM', initials:'RD', color:'#c8602a'},
+  {name:'Lakshmi Nair',   roll:'21PM11', dept:'PCM', initials:'LN', color:'#c8a02a'},
+  {name:'Vikram Pillai',  roll:'21AR02', dept:'Arts', initials:'VP', color:'#2ab87a'},
+  {name:'Ananya Singh',   roll:'21AR07', dept:'Arts', initials:'AS', color:'#c8602a'},
+];
+
+const BOOKS = [
+  {id:1, title:'Organic Chemistry', author:'Morrison & Boyd', rack:'B-4', library:'Science Block Library', copies:3, total:5, subject:'Chemistry'},
+  {id:2, title:'A Textbook of Organic Chemistry', author:'Bahl & Bahl', rack:'B-6', library:'Science Block Library', copies:1, total:3, subject:'Chemistry', dueDate:'Apr 18'},
+  {id:3, title:'NCERT Physics Part II', author:'NCERT', rack:'A-2', library:'Science Block Library', copies:4, total:8, subject:'Physics'},
+  {id:4, title:'Higher Algebra', author:'Hall & Knight', rack:'C-1', library:'Science Block Library', copies:0, total:4, subject:'Mathematics', dueDate:'Apr 15'},
+  {id:5, title:'Accountancy Part I', author:'DK Goel', rack:'A-3', library:'Commerce Library', copies:5, total:10, subject:'Accountancy'},
+  {id:6, title:'Business Studies', author:'Poonam Gandhi', rack:'B-2', library:'Commerce Library', copies:2, total:6, subject:'Business'},
+  {id:7, title:'Economics', author:'TR Jain & VK Ohri', rack:'B-5', library:'Commerce Library', copies:3, total:7, subject:'Economics'},
+  {id:8, title:'History of Modern India', author:'Bipin Chandra', rack:'D-1', library:'Arts & Humanities', copies:4, total:6, subject:'History'},
+  {id:9, title:'Political Theory', author:'NCERT', rack:'D-3', library:'Arts & Humanities', copies:6, total:6, subject:'Political Science'},
+  {id:10, title:'Concepts of Physics Vol 1', author:'H.C. Verma', rack:'A-5', library:'Science Block Library', copies:2, total:5, subject:'Physics'},
+  {id:11, title:'Mathematics Part I', author:'NCERT', rack:'C-3', library:'Central Library', copies:8, total:12, subject:'Mathematics'},
+  {id:12, title:'English Core', author:'NCERT', rack:'E-1', library:'Central Library', copies:10, total:15, subject:'English'},
+];
+
+const MY_BOOKS = [
+  {id:2, title:'A Textbook of Organic Chemistry', author:'Bahl & Bahl', daysLeft:5, borrowed:'Apr 4', due:'Apr 18', color:'#e8f5e9'},
+  {id:10, title:'Concepts of Physics Vol 1', author:'H.C. Verma', daysLeft:14, borrowed:'Mar 28', due:'Apr 26', color:'#e8f0fe'},
+  {id:11, title:'Mathematics Part I', author:'NCERT', daysLeft:-2, borrowed:'Mar 20', due:'Apr 10', color:'#fdeaea', overdue:true},
+];
+
+const NOTIFICATIONS_DATA = [
+  {type:'danger', icon:'📚', title:'Book Overdue!', text:'Mathematics Part I (NCERT) was due on Apr 10. Please return it immediately to avoid fines.', time:'Today, 8:00 AM', unread:true},
+  {type:'warn',   icon:'⏰', title:'Due in 5 Days', text:'Organic Chemistry (Bahl & Bahl) is due on Apr 18. Return or renew before the deadline.', time:'Today, 8:00 AM', unread:true},
+  {type:'info',   icon:'📖', title:'Book Available!', text:'Higher Algebra (Hall & Knight) you were waiting for is now back on Rack C-1, Science Library.', time:'Yesterday, 3:30 PM', unread:true},
+  {type:'success',icon:'✅', title:'Attendance Submitted', text:'Your library session attendance for Commerce II PUC B has been recorded successfully.', time:'Yesterday, 11:00 AM', unread:false},
+  {type:'info',   icon:'🗓️', title:'Holiday Reminder', text:'All libraries will be closed on Apr 14 (Ambedkar Jayanti). Plan your visits accordingly.', time:'Apr 11, 9:00 AM', unread:false},
+  {type:'warn',   icon:'🔴', title:'Central Library Near Full', text:'Capacity reached 88%. Teachers have been notified to redirect students to Commerce or Arts Library.', time:'Today, 10:22 AM', unread:false},
+];
+
+const REDIRECTS_LOG = [
+  {from:'Central Library', to:'Commerce Library', students:22, teacher:'Ms. Rao', time:'09:15 AM'},
+  {from:'Central Library', to:'Arts & Humanities', students:14, teacher:'Mr. Kumar', time:'09:48 AM'},
+  {from:'Science Block Library', to:'Commerce Library', students:30, teacher:'Ms. Priya', time:'10:21 AM'},
+];
+
+const HOLIDAYS = {
+  month:'April 2025',
+  days: {5:'weekend',6:'weekend',12:'weekend',13:'today',14:'holiday',15:'holiday',19:'weekend',20:'weekend',18:'holiday'}
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let selectedRole = null;
+let currentPage = 'dashboard';
+let attendance = {};
+let selectedLibForRedirect = null;
+let selectedDestLib = null;
+let chatHistory = [];
+let chatTyping = false;
+let attFilter = {lib:'all', dept:'all'};
+
+// Init attendance (random)
+STUDENTS.forEach(s => { attendance[s.roll] = Math.random() > 0.25; });
+
+// ============================================================
+// LOGIN
+// ============================================================
+function selectRole(role, el) {
+  selectedRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('dept-group').style.display = (role === 'student') ? 'block' : 'none';
+}
+
+function doLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  if (!selectedRole) { showToast('Please select a role'); return; }
+  if (!name) { showToast('Please enter your name'); return; }
+  const dept = selectedRole === 'student' ? document.getElementById('login-dept').value : null;
+  currentUser = { name, role: selectedRole, dept, initials: name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  initApp();
+}
+
+function doLogout() {
+  currentUser = null; selectedRole = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-name').value = '';
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+}
+
+// ============================================================
+// APP INIT
+// ============================================================
+function initApp() {
+  document.getElementById('topbar-name').textContent = currentUser.name;
+  document.getElementById('topbar-role').textContent = getRoleLabel(currentUser.role) + (currentUser.dept ? ` · ${currentUser.dept}` : '');
+  document.getElementById('topbar-avatar').textContent = currentUser.initials;
+
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dash-greeting').textContent = `${greeting}, ${currentUser.name.split(' ')[0]} 👋`;
+
+  buildNav();
+  buildDashboard();
+  buildAttendance();
+  buildMorePage();
+  initChat();
+  navigateTo('dashboard');
+}
+
+function getRoleLabel(r) {
+  return {student:'Student',teacher:'Teacher/Faculty',librarian:'Librarian',admin:'Administrator'}[r] || r;
+}
+
+function getLibStatus(lib) {
+  const pct = lib.occupied / lib.capacity;
+  if (pct >= 0.85) return {label:'Near Full', cls:'lib-full', pillCls:'pill-full', fillCls:'fill-full'};
+  if (pct >= 0.55) return {label:'Moderate', cls:'lib-moderate', pillCls:'pill-moderate', fillCls:'fill-moderate'};
+  return {label:'Available', cls:'lib-open', pillCls:'pill-open', fillCls:'fill-open'};
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function buildNav() {
+  const role = currentUser.role;
+  const items = role === 'student'
+    ? [{id:'dashboard',icon:iconHome(),label:'Home'},{id:'chat',icon:iconChat(),label:'AI Books'},{id:'attendance',icon:iconCheck(),label:'Attendance'},{id:'more',icon:iconBell(),label:'My Library'}]
+    : [{id:'dashboard',icon:iconHome(),label:'Dashboard'},{id:'chat',icon:iconChat(),label:'AI Books'},{id:'attendance',icon:iconCheck(),label:'Attendance'},{id:'more',icon:iconBell(),label:'Alerts'}];
+
+  document.getElementById('bottom-nav').innerHTML = items.map(it => `
+    <button class="nav-item" id="nav-${it.id}" onclick="navigateTo('${it.id}')">
+      ${it.icon}
+      <span>${it.label}</span>
+    </button>`).join('');
+}
+
+function navigateTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+
+  const mainContent = document.getElementById('main-content');
+  const chatContainer = document.getElementById('chat-container');
+
+  if (page === 'chat') {
+    mainContent.style.display = 'none';
+    chatContainer.style.display = 'flex';
+  } else {
+    mainContent.style.display = 'block';
+    chatContainer.style.display = 'none';
+    document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
+    const el = document.getElementById('page-' + page);
+    if (el) { el.style.display = 'block'; el.classList.add('active'); }
+  }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function buildDashboard() {
+  // Stats
+  const total = LIBRARIES.reduce((a,l) => a + l.occupied, 0);
+  const totalCap = LIBRARIES.reduce((a,l) => a + l.capacity, 0);
+  const availableLibs = LIBRARIES.filter(l => getLibStatus(l).label === 'Available').length;
+  const statsEl = document.getElementById('stats-row');
+  statsEl.innerHTML = `
+    <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total Visitors</div><div class="stat-delta delta-up">↑ 12% today</div></div>
+    <div class="stat-card"><div class="stat-val">${totalCap - total}</div><div class="stat-lbl">Total Vacant</div></div>
+    <div class="stat-card"><div class="stat-val">${availableLibs}/4</div><div class="stat-lbl">Libraries Available</div></div>
+    <div class="stat-card"><div class="stat-val">12</div><div class="stat-lbl">Books Overdue</div><div class="stat-delta delta-down">↑ 3 from yesterday</div></div>
+  `;
+
+  // Announce banner
+  const fullLibs = LIBRARIES.filter(l => getLibStatus(l).label === 'Near Full');
+  if (fullLibs.length) {
+    document.getElementById('announce-banner').style.display = 'flex';
+    document.getElementById('announce-text').textContent = `${fullLibs.map(l=>l.name).join(', ')} ${fullLibs.length>1?'are':'is'} near full capacity. Redirect students to available libraries.`;
+  }
+
+  // Library cards
+  const grid = document.getElementById('lib-grid');
+  const canRedirect = ['teacher','admin','librarian'].includes(currentUser.role);
+  grid.innerHTML = LIBRARIES.map(lib => {
+    const st = getLibStatus(lib);
+    const pct = Math.round(lib.occupied / lib.capacity * 100);
+    return `
+      <div class="lib-status-card ${st.cls}" onclick="showLibDetail('${lib.id}')">
+        <div class="lib-card-top">
+          <div>
+            <div class="lib-card-name">${lib.name}</div>
+            <div class="lib-card-dept">${lib.dept}</div>
+          </div>
+          <span class="status-pill ${st.pillCls}">${st.label}</span>
+        </div>
+        <div class="occ-bar"><div class="occ-fill ${st.fillCls}" style="width:${pct}%"></div></div>
+        <div class="occ-nums"><span>${lib.occupied} students</span><span>${pct}% full</span></div>
+        <div class="occ-count">${lib.occupied}<span style="font-size:0.85rem;font-weight:400;color:var(--ink3)"> / ${lib.capacity}</span></div>
+        ${canRedirect && st.label !== 'Available' ? `<button class="redirect-btn" onclick="event.stopPropagation();openRedirectModal('${lib.id}')">Redirect Students →</button>` : ''}
+        ${!canRedirect && st.label !== 'Available' ? `<div style="margin-top:8px;font-size:0.75rem;color:var(--ink3)">⚠ Consider visiting an available library</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  buildScheduleTab();
+  buildCalendarTab();
+  buildActivityTab();
+}
+
+function buildScheduleTab() {
+  const el = document.getElementById('dash-tab-schedule');
+  el.innerHTML = LIBRARIES.map(lib => `
+    <div class="schedule-card">
+      <div class="schedule-card-header">
+        <div class="schedule-card-title">${lib.name}</div>
+        <div style="font-size:0.72rem;color:var(--ink3)">Today's shifts</div>
+      </div>
+      ${lib.staff.map(s => `
+        <div class="shift-row">
+          <div class="shift-ava" style="background:${s.color}22;color:${s.color}">${s.initials}</div>
+          <div class="shift-name">${s.name}</div>
+          <div class="shift-time">${s.shift}</div>
+          <span class="${s.on ? 'on-duty' : 'off-duty'}">${s.on ? 'On Duty' : 'Off'}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function buildCalendarTab() {
+  const el = document.getElementById('dash-tab-calendar');
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.8rem">${HOLIDAYS.month}</div>
+      <div class="cal-grid">
+        ${['M','T','W','T','F','S','S'].map(d => `<div class="cal-day-label">${d}</div>`).join('')}
+        <div class="cal-day cal-empty"></div>
+        ${Array.from({length:30},(_,i) => {
+          const d = i+1;
+          const type = HOLIDAYS.days[d] || (d % 7 === 0 || d % 7 === 6 ? 'weekend' : 'work');
+          const cls = type === 'today' ? 'cal-today' : type === 'holiday' ? 'cal-holiday' : type === 'weekend' ? 'cal-weekend' : 'cal-work';
+          return `<div class="cal-day ${cls}" title="${type}">${d}</div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;gap:1rem;margin-top:10px;flex-wrap:wrap">
+        <span style="font-size:0.72rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#e8f5e8;border-radius:2px;display:inline-block"></span>Working</span>
+        <span style="font-size:0.72rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#fdeaea;border-radius:2px;display:inline-block"></span>Holiday</span>
+        <span style="font-size:0.72rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--bg3);border-radius:2px;display:inline-block"></span>Weekend</span>
+        <span style="font-size:0.72rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:var(--accent);border-radius:2px;display:inline-block"></span>Today</span>
+      </div>
+    </div>
+    <div class="card-sm">
+      <div class="section-label" style="margin-bottom:0.8rem">Upcoming Closures</div>
+      ${[
+        {date:'Apr 14', label:'Ambedkar Jayanti — All Libraries Closed', color:'var(--red)'},
+        {date:'Apr 18', label:'Good Friday — All Libraries Closed', color:'var(--red)'},
+        {date:'May 1',  label:'Labour Day — Science Library Closed', color:'var(--yellow)'},
+        {date:'Jun 12', label:'Eid — All Libraries Closed', color:'var(--red)'},
+      ].map(h => `
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2)">
+          <span style="background:${h.color}18;color:${h.color};padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;min-width:56px;text-align:center">${h.date}</span>
+          <span style="font-size:0.8rem">${h.label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function buildActivityTab() {
+  const el = document.getElementById('dash-tab-activity');
+  el.innerHTML = `
+    <div class="card">
+      <div class="section-label" style="margin-bottom:0.8rem">Today's Redirections</div>
+      ${REDIRECTS_LOG.map(r => `
+        <div class="notif-item notif-info" style="margin-bottom:8px;border-left:3px solid var(--accent2)">
+          <div class="notif-icon ni-blue">📤</div>
+          <div class="notif-body">
+            <div class="notif-title">${r.teacher} redirected ${r.students} students</div>
+            <div class="notif-text">${r.from} → ${r.to}</div>
+            <div class="notif-time">${r.time}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function switchDashTab(tab, btn) {
+  ['schedule','calendar','activity'].forEach(t => {
+    document.getElementById('dash-tab-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#page-dashboard .tab-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ============================================================
+// REDIRECT MODAL
+// ============================================================
+function openRedirectModal(libId) {
+  selectedLibForRedirect = libId;
+  selectedDestLib = null;
+  const lib = LIBRARIES.find(l => l.id === libId);
+  document.getElementById('modal-from').textContent = lib.name;
+  const available = LIBRARIES.filter(l => l.id !== libId && getLibStatus(l).label === 'Available');
+  document.getElementById('modal-options').innerHTML = available.length
+    ? available.map(l => `
+        <div class="modal-option" onclick="selectDest('${l.id}',this)">
+          <div style="width:36px;height:36px;background:var(--green)18;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem">📚</div>
+          <div>
+            <div class="modal-option-name">${l.name}</div>
+            <div class="modal-option-cap">${l.capacity - l.occupied} seats available · ${l.dept}</div>
+          </div>
+        </div>
+      `).join('')
+    : '<div style="font-size:0.85rem;color:var(--ink3);padding:1rem 0">No available libraries at the moment.</div>';
+  document.getElementById('redirect-modal').classList.add('open');
+}
+
+function selectDest(id, el) {
+  selectedDestLib = id;
+  document.querySelectorAll('.modal-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function closeModal() { document.getElementById('redirect-modal').classList.remove('open'); }
+
+function confirmRedirect() {
+  if (!selectedDestLib) { showToast('Please select a destination library'); return; }
+  const from = LIBRARIES.find(l => l.id === selectedLibForRedirect);
+  const to = LIBRARIES.find(l => l.id === selectedDestLib);
+  REDIRECTS_LOG.unshift({from:from.name, to:to.name, students:Math.floor(10+Math.random()*25), teacher:currentUser.name, time:'Now'});
+  closeModal();
+  showToast(`✓ Redirect sent: ${from.name} → ${to.name}`);
+  buildActivityTab();
+}
+
+// ============================================================
+// ATTENDANCE
+// ============================================================
+function buildAttendance() {
+  const role = currentUser.role;
+  const el = document.getElementById('att-content');
+  document.getElementById('att-sub').textContent = role === 'student' ? 'View your attendance record' : 'Mark and submit session attendance';
+
+  if (role === 'student') {
+    el.innerHTML = buildStudentAttView();
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="att-filters">
+      <select class="filter-select" onchange="filterAtt('lib',this.value)">
+        <option value="all">All Libraries</option>
+        ${LIBRARIES.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="filterAtt('dept',this.value)">
+        <option value="all">All Departments</option>
+        <option value="Commerce">Commerce</option>
+        <option value="PCB">PCB</option>
+        <option value="PCM">PCM</option>
+        <option value="Arts">Arts</option>
+      </select>
+      <div style="margin-left:auto;font-size:0.78rem;color:var(--ink3);display:flex;align-items:center">
+        Today · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+      </div>
+    </div>
+    <div id="att-table-wrap"></div>
+  `;
+  renderAttTable();
+}
+
+function filterAtt(key, val) { attFilter[key] = val; renderAttTable(); }
+
+function getFilteredStudents() {
+  return STUDENTS.filter(s => {
+    if (attFilter.dept !== 'all' && s.dept !== attFilter.dept) return false;
+    return true;
+  });
+}
+
+function renderAttTable() {
+  const students = getFilteredStudents();
+  const present = students.filter(s => attendance[s.roll]).length;
+  const pct = students.length ? Math.round(present/students.length*100) : 0;
+  const libName = attFilter.lib === 'all' ? 'All Libraries' : LIBRARIES.find(l=>l.id===attFilter.lib)?.name;
+
+  document.getElementById('att-table-wrap').innerHTML = `
+    <div class="att-table-wrap">
+      <div class="att-table-header">
+        <div class="att-table-title">${libName} · ${attFilter.dept === 'all' ? 'All Departments' : attFilter.dept}</div>
+        <div class="att-progress">
+          <span>${present}/${students.length}</span>
+          <div class="att-prog-bar"><div class="att-prog-fill" id="att-prog-fill" style="width:${pct}%"></div></div>
+          <span>${pct}%</span>
+        </div>
+      </div>
+      ${students.map(s => `
+        <div class="att-row">
+          <div class="att-ava" style="background:${s.color}22;color:${s.color}">${s.initials}</div>
+          <div class="att-info">
+            <div class="att-name">${s.name}</div>
+            <div class="att-roll">${s.roll}</div>
+            <div class="att-dept">${s.dept}</div>
+          </div>
+          <div class="check-box ${attendance[s.roll] ? 'present' : 'absent'}" onclick="toggleAtt('${s.roll}')" title="${attendance[s.roll] ? 'Present' : 'Absent'}">
+            ${attendance[s.roll]
+              ? `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 7l3.5 3.5 5.5-6" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`
+              : `<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 2l7 7M9 2l-7 7" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>`
+            }
+          </div>
+        </div>
+      `).join('')}
+      <div class="att-footer">
+        <div class="att-summary" id="att-summary">${present} present, ${students.length - present} absent out of ${students.length} students</div>
+        <button class="mark-all-btn" onclick="markAll(true)">Mark All Present</button>
+        <button class="export-btn" onclick="exportAtt()">Export CSV</button>
+        <button class="submit-att-btn" onclick="submitAttendance()">Submit Attendance ✓</button>
+      </div>
+    </div>
+  `;
+}
+
+function buildStudentAttView() {
+  const weeks = ['Apr 7','Apr 8','Apr 9','Apr 10','Apr 11','Apr 12','Apr 13'];
+  const record = [true,true,false,true,true,false,true];
+  const present = record.filter(Boolean).length;
+  return `
+    <div class="stats-row" style="margin-bottom:1.2rem">
+      <div class="stat-card"><div class="stat-val">${present}/7</div><div class="stat-lbl">This Week</div></div>
+      <div class="stat-card"><div class="stat-val">84%</div><div class="stat-lbl">This Month</div><div class="stat-delta delta-up">↑ Good standing</div></div>
+      <div class="stat-card"><div class="stat-val">76%</div><div class="stat-lbl">This Year</div></div>
+    </div>
+    <div class="card-sm">
+      <div class="section-label" style="margin-bottom:0.8rem">This Week's Record</div>
+      ${weeks.map((d,i) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border2)">
+          <span style="font-size:0.84rem;font-weight:500">${d}</span>
+          <span style="padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;
+            background:${record[i] ? '#e7faf2' : '#fdeaea'};
+            color:${record[i] ? 'var(--green)' : 'var(--red)'}">${record[i] ? 'Present' : 'Absent'}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function toggleAtt(roll) {
+  attendance[roll] = !attendance[roll];
+  renderAttTable();
+}
+
+function markAll(val) {
+  getFilteredStudents().forEach(s => { attendance[s.roll] = val; });
+  renderAttTable();
+}
+
+function submitAttendance() {
+  const students = getFilteredStudents();
+  const present = students.filter(s => attendance[s.roll]).length;
+  showToast(`✓ Attendance submitted: ${present}/${students.length} present`);
+}
+
+function exportAtt() {
+  const students = getFilteredStudents();
+  let csv = 'Roll No,Name,Department,Status\n';
+  students.forEach(s => { csv += `${s.roll},${s.name},${s.dept},${attendance[s.roll]?'Present':'Absent'}\n`; });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'kjc_attendance.csv'; a.click();
+  showToast('Attendance exported as CSV');
+}
+
+// ============================================================
+// MORE PAGE (My Books / Notifications)
+// ============================================================
+function buildMorePage() {
+  const role = currentUser.role;
+  document.getElementById('more-title').textContent = role === 'student' ? 'My Library' : 'Alerts & Notifications';
+  const el = document.getElementById('more-content');
+
+  if (role === 'student') {
+    el.innerHTML = `
+      <div class="tab-row">
+        <button class="tab-item active" onclick="switchMoreTab('books',this)">My Books</button>
+        <button class="tab-item" onclick="switchMoreTab('notifs',this)">Notifications</button>
+      </div>
+      <div id="more-tab-books">${buildMyBooksHTML()}</div>
+      <div id="more-tab-notifs" style="display:none">${buildNotifsHTML()}</div>
+    `;
+  } else {
+    el.innerHTML = buildNotifsHTML();
+  }
+}
+
+function switchMoreTab(tab, btn) {
+  document.getElementById('more-tab-books').style.display = tab === 'books' ? 'block' : 'none';
+  document.getElementById('more-tab-notifs').style.display = tab === 'notifs' ? 'block' : 'none';
+  document.querySelectorAll('#page-more .tab-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildMyBooksHTML() {
+  return MY_BOOKS.map(b => `
+    <div class="my-book-card">
+      <div class="book-spine" style="background:${b.color}">${b.overdue ? '⚠️' : '📖'}</div>
+      <div class="book-details">
+        <div class="book-title">${b.title}</div>
+        <div class="book-author">${b.author}</div>
+        <div class="book-due ${b.overdue ? 'due-overdue' : b.daysLeft <= 5 ? 'due-warn' : 'due-safe'}">
+          ${b.overdue ? `⚠ Overdue by ${Math.abs(b.daysLeft)} days — Due was ${b.due}` : `Due: ${b.due} (${b.daysLeft} days left)`}
+        </div>
+        <div style="margin-top:4px;font-size:0.72rem;color:var(--ink3)">Borrowed: ${b.borrowed}</div>
+      </div>
+      <button class="renew-btn" onclick="renewBook(${b.id})">${b.overdue ? 'Return' : 'Renew'}</button>
+    </div>
+  `).join('');
+}
+
+function buildNotifsHTML() {
+  return NOTIFICATIONS_DATA.map(n => `
+    <div class="notif-item notif-${n.type}">
+      <div class="notif-icon ni-${n.type === 'danger' ? 'red' : n.type === 'warn' ? 'yellow' : n.type === 'success' ? 'green' : 'blue'}">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+      ${n.unread ? '<div class="notif-unread"></div>' : ''}
+    </div>
+  `).join('');
+}
+
+function renewBook(id) { showToast('Renewal request sent! Librarian will confirm.'); }
+
+// ============================================================
+// AI CHAT
+// ============================================================
+function initChat() {
+  document.getElementById('quick-chips').innerHTML = [
+    'Find a chemistry book','Organic chemistry rack','Available books today','Physics books','Check my returns','Commerce books','Book recommendations'
+  ].map(c => `<div class="chip" onclick="sendQuickChip('${c}')">${c}</div>`).join('');
+
+  addAIMessage(`Hello ${currentUser.name.split(' ')[0]}! 👋 I'm your KJC Library AI assistant. I can help you:
+
+• **Find books** by title, subject or author
+• **Check availability** and rack locations
+• **Reserve a book** or get notified when it returns
+• **Get recommendations** for your subjects
+
+What are you looking for today?`);
+}
+
+function addAIMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble bubble-ai';
+  div.innerHTML = formatChatText(text);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble bubble-user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTypingIndicator() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble bubble-ai typing';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function formatChatText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function sendQuickChip(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || chatTyping) return;
+  input.value = '';
+  addUserMessage(text);
+  chatHistory.push({role:'user', content:text});
+
+  // Build book context
+  const bookContext = BOOKS.map(b =>
+    `Book: "${b.title}" by ${b.author} | Rack: ${b.rack} | Library: ${b.library} | Copies available: ${b.copies}/${b.total} | Subject: ${b.subject}${b.dueDate ? ` | Next return expected: ${b.dueDate}` : ''}`
+  ).join('\n');
+
+  const libContext = LIBRARIES.map(l =>
+    `${l.name}: ${l.occupied}/${l.capacity} seats occupied (${getLibStatus(l).label})`
+  ).join('\n');
+
+  const systemPrompt = `You are LibraryAI, the AI assistant for KJC Library.ai — the smart library management system for Krupanidhi Junior College (KJC), Bengaluru.
+
+The user is: ${currentUser.name}, Role: ${currentUser.role}${currentUser.dept ? `, Department: ${currentUser.dept}` : ''}.
+
+CURRENT LIBRARY DATA:
+${libContext}
+
+BOOK INVENTORY:
+${bookContext}
+
+STUDENT'S BORROWED BOOKS (if student):
+1. "A Textbook of Organic Chemistry" by Bahl & Bahl — Due Apr 18 (5 days left)
+2. "Concepts of Physics Vol 1" by H.C. Verma — Due Apr 26 (14 days left)
+3. "Mathematics Part I" by NCERT — OVERDUE since Apr 10
+
+INSTRUCTIONS:
+- When books are found, always mention: exact rack number, library name, copies available
+- If 0 copies, mention when next copy is expected back
+- For overdue books, remind the student
+- Be warm, concise, helpful
+- Format with line breaks for readability
+- If asked to reserve/notify, confirm the action (it's a demo)
+- If asked about library status, use the live data above
+- Keep responses under 150 words unless listing multiple books
+- Use simple formatting, no markdown headers`;
+
+  chatTyping = true;
+  document.getElementById('send-btn').disabled = true;
+  addTypingIndicator();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not process that. Please try again.';
+    removeTypingIndicator();
+    addAIMessage(reply);
+    chatHistory.push({role:'assistant', content:reply});
+  } catch(e) {
+    removeTypingIndicator();
+    addAIMessage('I\'m having trouble connecting right now. Please check your connection and try again.');
+  }
+
+  chatTyping = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function showLibDetail(id) {
+  const lib = LIBRARIES.find(l => l.id === id);
+  showToast(`${lib.name}: ${lib.occupied}/${lib.capacity} occupied`);
+}
+
+// SVG ICONS
+function iconHome(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`}
+function iconChat(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`}
+function iconCheck(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`}
+function iconBell(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>`}
+</script>
+</body>
+</html>
